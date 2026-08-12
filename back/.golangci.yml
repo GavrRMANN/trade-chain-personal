@@ -1,0 +1,88 @@
+version: "2"
+
+run:
+  go: "1.26"
+
+linters:
+  default: standard
+
+  enable:
+    # HTTP
+    - bodyclose
+    - contextcheck
+
+    # Errors
+    - errorlint
+
+    # Security
+    - gosec
+
+    # Code quality
+    - gocritic
+    - revive
+
+    # Dead code search
+    - unused
+
+    # PostgreSQL / pgx
+    - rowserrcheck
+    - sqlclosecheck
+
+    # Standard library / API correctness
+    - usestdlibvars
+
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+
+    govet:
+      enable:
+        - shadow
+
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+        - style
+
+    revive:
+      severity: warning
+
+  exclusions:
+    generated: strict
+
+    paths:
+      - "^docs/docs\\.go$"
+
+    rules:
+      - path: "_test\\.go$"
+        linters:
+          - gosec
+
+      - path: "_test\\.go$"
+        linters:
+          - errcheck
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+  settings:
+    gofmt:
+      simplify: true
+
+    goimports:
+      local-prefixes:
+        - trade-chain
+
+  exclusions:
+    generated: strict
+
+    paths:
+      - "^docs/docs\\.go$"
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

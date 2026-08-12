@@ -1,0 +1,2254 @@
+basePath: /
+definitions:
+  domain.Category:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.Chain:
+    properties:
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      exchange_goal_id:
+        type: string
+      expires_at:
+        type: string
+      from_product_id:
+        type: string
+      initiator_id:
+        type: string
+      message:
+        type: string
+      next_chain_id:
+        type: string
+      previous_chain_id:
+        type: string
+      recipient_id:
+        type: string
+      route_step_id:
+        type: string
+      status:
+        type: string
+      surcharge:
+        $ref: '#/definitions/domain.Surcharge'
+      to_product_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.ChainMessage:
+    properties:
+      body:
+        type: string
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      message_id:
+        type: string
+    type: object
+  domain.ChainStatus:
+    enum:
+    - pending
+    - active
+    - completed
+    - cancelled
+    - rejected
+    - countered
+    - failed
+    - expired
+    type: string
+    x-enum-comments:
+      ChainActive: получатель согласился, стороны договариваются
+      ChainCancelled: инициатор отозвал предложение
+      ChainCompleted: обмен состоялся, подтвердили оба
+      ChainCountered: получатель предложил свой вариант
+      ChainExpired: ответа не дождались
+      ChainFailed: договорились, но обмен не состоялся
+      ChainPending: предложение отправлено, ответа нет
+      ChainRejected: получатель отказался
+    x-enum-descriptions:
+    - предложение отправлено, ответа нет
+    - получатель согласился, стороны договариваются
+    - обмен состоялся, подтвердили оба
+    - инициатор отозвал предложение
+    - получатель отказался
+    - получатель предложил свой вариант
+    - договорились, но обмен не состоялся
+    - ответа не дождались
+    x-enum-varnames:
+    - ChainPending
+    - ChainActive
+    - ChainCompleted
+    - ChainCancelled
+    - ChainRejected
+    - ChainCountered
+    - ChainFailed
+    - ChainExpired
+  domain.CreateCustomerDTO:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  domain.CreateProductDTO:
+    properties:
+      category_id:
+        type: string
+      customer_id:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      status:
+        $ref: '#/definitions/domain.ProductStatus'
+      title:
+        type: string
+    required:
+    - customer_id
+    - title
+    type: object
+  domain.Customer:
+    properties:
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      email:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.Product:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      status:
+        $ref: '#/definitions/domain.ProductStatus'
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.ProductStatus:
+    enum:
+    - active
+    - reserved
+    - exchanged
+    - archived
+    type: string
+    x-enum-varnames:
+    - ProductActive
+    - ProductReserved
+    - ProductExchanged
+    - ProductArchived
+  domain.Review:
+    properties:
+      chain_id:
+        description: |-
+          ChainID — сделка, по итогам которой оставлена оценка. Допускает NULL
+          ради отзывов, заведённых до появления привязки.
+        type: string
+      comment:
+        type: string
+      created_at:
+        type: string
+      from_customer_id:
+        type: string
+      product_id:
+        type: string
+      rating:
+        type: integer
+      review_id:
+        type: string
+      to_customer_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.Surcharge:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+      payer:
+        type: string
+    type: object
+  domain.UpdateCustomerDTO:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    type: object
+  domain.UpdateProductDTO:
+    properties:
+      category_id:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      status:
+        $ref: '#/definitions/domain.ProductStatus'
+      title:
+        type: string
+    type: object
+  domain.Wishlist:
+    properties:
+      created_at:
+        type: string
+      name:
+        type: string
+      product_id:
+        type: string
+      updated_at:
+        type: string
+      wishlist_id:
+        type: string
+    type: object
+  httpapi.AuthResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/domain.Customer'
+    type: object
+  httpapi.ChainStatusRequest:
+    properties:
+      status:
+        $ref: '#/definitions/domain.ChainStatus'
+    type: object
+  httpapi.ConfirmExchangeRequest:
+    properties:
+      reason:
+        type: string
+      result:
+        type: string
+    type: object
+  httpapi.ConfirmRequest:
+    properties:
+      success:
+        type: boolean
+    type: object
+  httpapi.ConfirmationResponse:
+    properties:
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      reason:
+        type: string
+      result:
+        type: string
+    type: object
+  httpapi.CreateOfferRequest:
+    properties:
+      comment:
+        type: string
+      exchange_goal_id:
+        type: string
+      offered_product_id:
+        type: string
+      requested_product_id:
+        type: string
+      route_step_id:
+        type: string
+      surcharge:
+        $ref: '#/definitions/httpapi.SurchargeBody'
+    type: object
+  httpapi.CreatedOfferResponse:
+    properties:
+      conversation_id:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+    type: object
+  httpapi.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  httpapi.ExchangeResponse:
+    properties:
+      goal_id:
+        type: string
+      id:
+        type: string
+      offer_status:
+        type: string
+      offered_product_id:
+        type: string
+      requested_product_id:
+        type: string
+      status:
+        type: string
+    type: object
+  httpapi.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  httpapi.MessageRequest:
+    properties:
+      body:
+        type: string
+    type: object
+  httpapi.OfferDetailsResponse:
+    properties:
+      comment:
+        type: string
+      confirmations:
+        items:
+          $ref: '#/definitions/httpapi.ConfirmationResponse'
+        type: array
+      conversation_id:
+        type: string
+      created_at:
+        type: string
+      exchange_goal_id:
+        type: string
+      exchange_id:
+        type: string
+      exchange_status:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      initiator_id:
+        type: string
+      messages:
+        items:
+          $ref: '#/definitions/domain.ChainMessage'
+        type: array
+      offered_product_id:
+        type: string
+      recipient_id:
+        type: string
+      requested_product_id:
+        type: string
+      role:
+        type: string
+      route_step_id:
+        type: string
+      status:
+        type: string
+      surcharge:
+        $ref: '#/definitions/httpapi.SurchargeBody'
+      updated_at:
+        type: string
+    type: object
+  httpapi.OfferResponse:
+    properties:
+      comment:
+        type: string
+      conversation_id:
+        type: string
+      created_at:
+        type: string
+      exchange_goal_id:
+        type: string
+      exchange_id:
+        type: string
+      exchange_status:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      initiator_id:
+        type: string
+      offered_product_id:
+        type: string
+      recipient_id:
+        type: string
+      requested_product_id:
+        type: string
+      role:
+        type: string
+      route_step_id:
+        type: string
+      status:
+        type: string
+      surcharge:
+        $ref: '#/definitions/httpapi.SurchargeBody'
+      updated_at:
+        type: string
+    type: object
+  httpapi.OptionRequest:
+    properties:
+      category_id:
+        type: string
+    type: object
+  httpapi.ReviewRequest:
+    properties:
+      chain_id:
+        type: string
+      comment:
+        type: string
+      product_id:
+        type: string
+      rating:
+        type: integer
+    type: object
+  httpapi.SurchargeBody:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+      payer:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для обмена товарами
+  title: Trade Chain API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Login user
+      tags:
+      - auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Get information about the authenticated user (validates token)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get current user info
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user and return JWT token
+      parameters:
+      - description: Registration data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateCustomerDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/httpapi.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Register user
+      tags:
+      - auth
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: List all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Category'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: List categories
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new category
+      parameters:
+      - description: Category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Category'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Create category
+      tags:
+      - categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Delete category
+      tags:
+      - categories
+    get:
+      consumes:
+      - application/json
+      description: Get category details
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get category by ID
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      description: Update category information
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Update category
+      tags:
+      - categories
+  /categories/{id}/subcategories:
+    get:
+      consumes:
+      - application/json
+      description: Get subcategories of a category
+      parameters:
+      - description: Parent Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Category'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get subcategories
+      tags:
+      - categories
+  /chains:
+    post:
+      consumes:
+      - application/json
+      description: Create a new exchange chain
+      parameters:
+      - description: Chain data (initiator_id will be set from token)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Chain'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Chain'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Create a chain
+      tags:
+      - chains
+  /chains/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a chain (soft delete maybe, but hard delete in repo)
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Delete chain
+      tags:
+      - chains
+    get:
+      consumes:
+      - application/json
+      description: Get chain details
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Chain'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get chain by ID
+      tags:
+      - chains
+  /chains/{id}/confirm:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Подтвердить итог обмена. Состоявшимся обмен считается только
+        после подтверждения обеими сторонами; несостоявшимся — по
+        заявлению одной.
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Итог встречи
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.ConfirmRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Chain'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Confirm exchange outcome
+      tags:
+      - chains
+  /chains/{id}/full:
+    get:
+      consumes:
+      - application/json
+      description: Get full chain details (all linked chains)
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Chain'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get full chain
+      tags:
+      - chains
+  /chains/{id}/messages:
+    get:
+      description: Переписка по сделке. Доступна только её участникам.
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.ChainMessage'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Read exchange chat
+      tags:
+      - chains
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Написать второй стороне по этой сделке. По закрытой сделке
+        переписка недоступна.
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Текст сообщения
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.MessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.ChainMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Write to exchange chat
+      tags:
+      - chains
+  /chains/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update chain status (pending -> active -> completed, or cancelled/rejected)
+      parameters:
+      - description: Chain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.ChainStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Update chain status
+      tags:
+      - chains
+  /chains/by-product/{productID}:
+    get:
+      consumes:
+      - application/json
+      description: Get chains associated with a product (either from or to)
+      parameters:
+      - description: Product ID
+        in: path
+        name: productID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Chain'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get chains by product
+      tags:
+      - chains
+  /chains/my:
+    get:
+      description: 'Обмены пользователя: и предложенные им, и полученные'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Chain'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: List my exchanges
+      tags:
+      - chains
+  /customers:
+    get:
+      consumes:
+      - application/json
+      description: List customers with pagination
+      parameters:
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: 20
+        description: Limit
+        in: query
+        maximum: 100
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Customer'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: List customers
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Register a new customer
+      parameters:
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateCustomerDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Create customer
+      tags:
+      - customers
+  /customers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete customer (set is_active=false)
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Delete customer
+      tags:
+      - customers
+    get:
+      consumes:
+      - application/json
+      description: Get customer details
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get customer by ID
+      tags:
+      - customers
+    patch:
+      consumes:
+      - application/json
+      description: Update customer information
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateCustomerDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Update customer
+      tags:
+      - customers
+  /exchange-offers:
+    get:
+      description: |-
+        Предложения текущего пользователя. Без параметров возвращает
+        обе стороны и все состояния.
+      parameters:
+      - description: Сторона
+        enum:
+        - incoming
+        - outgoing
+        in: query
+        name: role
+        type: string
+      - description: Состояния через запятую
+        enum:
+        - pending
+        - accepted
+        - declined
+        - cancelled
+        - expired
+        - completed
+        - failed
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/httpapi.OfferResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Входящие и исходящие предложения
+      tags:
+      - exchange-offers
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Двустороннее предложение владельцу запрошенного товара. Сервер
+        проверяет, что оба товара активны, принадлежат разным людям и
+        инициатор владеет предложенным. Поле exchange_goal_id
+        необязательно: без него это прямой обмен из карточки товара.
+        Повторное предложение по той же паре товаров отдаёт 409.
+      parameters:
+      - description: Предложение
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.CreateOfferRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/httpapi.CreatedOfferResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Отправить предложение обмена
+      tags:
+      - exchange-offers
+  /exchange-offers/{offerID}:
+    get:
+      description: |-
+        Карточка предложения целиком. Доступна только его сторонам:
+        внутри переписка о встрече.
+      parameters:
+      - description: Offer ID
+        in: path
+        name: offerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.OfferDetailsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Детали предложения, чат и состояние
+      tags:
+      - exchange-offers
+  /exchange-offers/{offerID}/accept:
+    post:
+      description: |-
+        Принять может только владелец запрошенного товара. Принятие
+        создаёт обмен в состоянии awaiting_initiator и не меняет
+        владение товарами — для этого нужны подтверждения обеих сторон.
+      parameters:
+      - description: Offer ID
+        in: path
+        name: offerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.OfferResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Принять предложение
+      tags:
+      - exchange-offers
+  /exchange-offers/{offerID}/cancel:
+    post:
+      description: |-
+        Отозвать предложение может только отправитель и только пока
+        на него не ответили.
+      parameters:
+      - description: Offer ID
+        in: path
+        name: offerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.OfferResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Отозвать своё предложение
+      tags:
+      - exchange-offers
+  /exchange-offers/{offerID}/decline:
+    post:
+      description: |-
+        Отказ доступен владельцу запрошенного товара и не отменяет
+        остальные предложения по этим вещам.
+      parameters:
+      - description: Offer ID
+        in: path
+        name: offerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.OfferResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Отклонить предложение
+      tags:
+      - exchange-offers
+  /exchanges/{exchangeID}/confirm:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Обмен считается состоявшимся только после двух подтверждений:
+        при первом success сервер ждёт второго, при втором меняет
+        владельцев товаров и закрывает конкурирующие предложения по тем
+        же вещам. Для failed достаточно одной стороны — тот, кто приехал
+        впустую, не должен зависеть от согласия второй.
+      parameters:
+      - description: Exchange ID (совпадает с ID предложения)
+        in: path
+        name: exchangeID
+        required: true
+        type: string
+      - description: Итог встречи
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.ConfirmExchangeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ExchangeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Подтвердить результат обмена
+      tags:
+      - exchanges
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get product catalog with pagination and optional text/category
+        search
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        type: string
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - description: Search query
+        in: query
+        name: q
+        type: string
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        maximum: 100
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: List and search products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product listing
+      parameters:
+      - description: Product data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateProductDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Create product
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete product (set status to archived)
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Delete product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Get product details
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get product by ID
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      description: Update product information
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated product data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateProductDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Update product
+      tags:
+      - products
+  /products/{productID}/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload an image for a specific product
+      parameters:
+      - description: Product ID
+        in: path
+        name: productID
+        required: true
+        type: string
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Upload image for product
+      tags:
+      - products
+  /products/by-customer/{customerID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all products owned by a customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get products by customer
+      tags:
+      - products
+  /reviews:
+    post:
+      consumes:
+      - application/json
+      description: Create a new review for a customer
+      parameters:
+      - description: Оценка по итогам обмена
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.ReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Review'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Create review
+      tags:
+      - reviews
+  /reviews/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a review
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Delete review
+      tags:
+      - reviews
+    get:
+      consumes:
+      - application/json
+      description: Get review details
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Review'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get review by ID
+      tags:
+      - reviews
+  /reviews/by-customer/{customerID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all reviews received by a customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Review'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get reviews for a customer
+      tags:
+      - reviews
+  /reviews/by-customer/{customerID}/rating:
+    get:
+      consumes:
+      - application/json
+      description: Get average rating of a customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customerID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: average_rating
+          schema:
+            additionalProperties:
+              format: float64
+              type: number
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get average rating for a customer
+      tags:
+      - reviews
+  /search/chain:
+    get:
+      consumes:
+      - application/json
+      description: Find a chain of exchanges from user's products to target product
+      parameters:
+      - description: Target product ID
+        in: query
+        name: target_product_id
+        required: true
+        type: string
+      - default: 10
+        description: Maximum depth
+        in: query
+        name: max_depth
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: chain (array of products) and length
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Find exchange chain
+      tags:
+      - search
+  /wishlists:
+    post:
+      consumes:
+      - application/json
+      description: Create a wishlist for a product
+      parameters:
+      - description: Wishlist data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Wishlist'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Wishlist'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Create wishlist
+      tags:
+      - wishlists
+  /wishlists/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a wishlist
+      parameters:
+      - description: Wishlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Delete wishlist
+      tags:
+      - wishlists
+    get:
+      consumes:
+      - application/json
+      description: Get wishlist details
+      parameters:
+      - description: Wishlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Wishlist'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get wishlist by ID
+      tags:
+      - wishlists
+  /wishlists/{id}/options:
+    get:
+      consumes:
+      - application/json
+      description: Get list of categories that the wishlist owner wants to receive
+      parameters:
+      - description: Wishlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Category'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get wishlist options (categories)
+      tags:
+      - wishlists
+    post:
+      consumes:
+      - application/json
+      description: Add a category that the wishlist owner wants to receive
+      parameters:
+      - description: Wishlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Category ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.OptionRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Add category option to wishlist
+      tags:
+      - wishlists
+  /wishlists/{id}/options/{categoryID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a category from wishlist options
+      parameters:
+      - description: Wishlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Remove category option from wishlist
+      tags:
+      - wishlists
+  /wishlists/by-product/{productID}:
+    get:
+      consumes:
+      - application/json
+      description: Get wishlist associated with a product
+      parameters:
+      - description: Product ID
+        in: path
+        name: productID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Wishlist'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: Get wishlist by product
+      tags:
+      - wishlists
+swagger: "2.0"
