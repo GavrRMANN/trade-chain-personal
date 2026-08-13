@@ -505,7 +505,7 @@ func TestCompletionCancelsCompetingActiveOffers(t *testing.T) {
 	}
 }
 
-func TestSingleNegativeConfirmationFailsExchange(t *testing.T, customerID string) {
+func TestSingleNegativeConfirmationFailsExchange(t *testing.T) {
 	f := newFixture(domain.ChainActive)
 	ctx := context.Background()
 
@@ -513,7 +513,7 @@ func TestSingleNegativeConfirmationFailsExchange(t *testing.T, customerID string
 		t.Fatalf("неожиданная ошибка: %v", err)
 	}
 
-	chain, _ := f.service.GetByID(ctx, chainID, customerID)
+	chain, _ := f.service.GetByID(ctx, chainID, initiator)
 	if chain.Status != string(domain.ChainFailed) {
 		t.Errorf("статус %q, ожидался %q — не состоявшийся обмен решает одна сторона", chain.Status, domain.ChainFailed)
 	}

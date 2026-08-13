@@ -14,6 +14,12 @@ type CustomerRepository interface {
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, offset, limit int) ([]domain.Customer, error)
 	ListOverview(ctx context.Context, offset, limit int) ([]domain.CustomerOverview, error)
+
+	// Работа с вишлистами пользователя
+	GetCustomerWishlistOptions(ctx context.Context, customerID string) ([]domain.CustomerWishlistOption, error)
+	AddCustomerWishlistOption(ctx context.Context, customerID, categoryID string) error
+	DeleteCustomerWishlistOption(ctx context.Context, customerID, categoryID string) error
+	ReplaceCustomerWishlistOptions(ctx context.Context, customerID string, dto *domain.UpdateCustomerWishlistDTO) error
 }
 
 type ProductRepository interface {

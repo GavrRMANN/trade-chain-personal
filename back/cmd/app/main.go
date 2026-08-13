@@ -75,6 +75,9 @@ func main() {
 		Search:        searchService,
 		Events:        eventBroker,
 		CronSecret:    os.Getenv("CRON_SECRET"),
+
+		DB:              pool,
+		DemoResetSecret: os.Getenv("DEMO_RESET_SECRET"),
 	}
 	router := httpapi.NewRouter(deps)
 

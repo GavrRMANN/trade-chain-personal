@@ -3,6 +3,7 @@ package httpapi
 import (
 	"errors"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -96,32 +97,47 @@ func (h productHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wishlist := &domain.Wishlist{
-		ProductID: product.ProductID,
-		Name:      v.Wishlist.Name,
+	// Товар на этом шаге уже сохранён, поэтому сбой списка желаний не отменяет
+	// создание объявления и не превращается в ошибку ответа: клиент повторил бы
+	// запрос и завёл второе такое же объявление. Список желаний правится с
+	// карточки товара отдельно, а причина сбоя остаётся в логе.
+	if err := h.createWishlistFor(r, product.ProductID, v.Wishlist); err != nil {
+		log.Printf(
+			"PRODUCT CREATE WISHLIST FAILED: product=%s err=%v",
+			product.ProductID,
+			err,
+		)
 	}
 
-	createdWishlist, err := h.wishlist.Create(
-		r.Context(),
-		wishlist,
-	)
+	writeJSON(w, http.StatusCreated, product)
+}
+
+// createWishlistFor заводит список желаний нового объявления вместе с его
+// категориями.
+func (h productHandler) createWishlistFor(
+	r *http.Request,
+	productID string,
+	dto *domain.CreateWishlistDTO,
+) error {
+	createdWishlist, err := h.wishlist.Create(r.Context(), &domain.Wishlist{
+		ProductID: productID,
+		Name:      dto.Name,
+	})
 	if err != nil {
-		writeError(w, err)
-		return
+		return err
 	}
 
-	for _, categoryID := range v.Wishlist.CategoryIDs {
+	for _, categoryID := range dto.CategoryIDs {
 		if err := h.wishlist.AddCategoryOption(
 			r.Context(),
 			createdWishlist.WishlistID,
 			categoryID,
 		); err != nil {
-			writeError(w, err)
-			return
+			return err
 		}
 	}
 
-	writeJSON(w, http.StatusCreated, product)
+	return nil
 }
 
 // get godoc

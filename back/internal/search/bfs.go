@@ -15,8 +15,8 @@ type queueNode struct {
 func findChainBFS(
 	ctx context.Context,
 	service service.ProductService,
-	source domain.Product,
 	target domain.Product,
+	source domain.Product,
 	maxDepth int,
 ) (*ProductSearchResult, error) {
 
@@ -48,7 +48,7 @@ func findChainBFS(
 			)
 
 			return &ProductSearchResult{
-				Products: path,
+				Products: reverseProducts(path),
 				Length:   len(path) - 1,
 			}, nil
 		}

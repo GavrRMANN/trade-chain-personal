@@ -1,13 +1,12 @@
 package domain
 
-import (
-	"time"
-)
+import "time"
 
 type CreateWishlistDTO struct {
 	Name        string   `json:"name"`
 	CategoryIDs []string `json:"category_ids"`
 }
+
 type Wishlist struct {
 	WishlistID string    `json:"wishlist_id"`
 	ProductID  string    `json:"product_id"`
@@ -19,4 +18,13 @@ type Wishlist struct {
 type WishlistOption struct {
 	WishlistID string `json:"wishlist_id"`
 	CategoryID string `json:"category_id"`
+}
+
+type CustomerWishlistOption struct {
+	CustomerID string `json:"customer_id"`
+	CategoryID string `json:"category_id"`
+}
+
+type UpdateCustomerWishlistDTO struct {
+	CategoryIDs []string `json:"category_ids"`
 }

@@ -33,9 +33,10 @@ func (r *productRepository) Create(
 			description,
 			image,
 			price,
-			location
+			location,
+			status
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, COALESCE($8, 'active'))
 		RETURNING
 			product_id,
 			customer_id,
@@ -52,6 +53,15 @@ func (r *productRepository) Create(
 
 	var created domain.Product
 
+	// Статус передаётся отдельным параметром, а не остаётся на умолчании
+	// колонки: сервис его проверяет и нормализует, и молча терять выбор
+	// вызывающего значит отдавать активной вещь, которую просили придержать.
+	var status *string
+	if dto.Status != nil {
+		value := string(*dto.Status)
+		status = &value
+	}
+
 	err := r.db.QueryRow(
 		ctx,
 		query,
@@ -62,6 +72,7 @@ func (r *productRepository) Create(
 		dto.Image,
 		dto.Price,
 		dto.Location,
+		status,
 	).Scan(
 		&created.ProductID,
 		&created.CustomerID,
@@ -492,6 +503,14 @@ func (r *productRepository) List(
 	return products, nil
 }
 
+// GetExchangeCandidates отдаёт вещи, которые владелец исходного товара готов
+// принять взамен.
+//
+// Берутся только активные карточки: обменянная вещь уже уехала к новому
+// владельцу, а зарезервированная обещана другому обмену. И то и другое
+// сорвалось бы при попытке принять предложение (exchange.Validate требует
+// активный товар с обеих сторон), но человек узнал бы об этом только после
+// отправки — и увидел бы такую вещь в маршруте к цели как следующий шаг.
 func (r *productRepository) GetExchangeCandidates(ctx context.Context, productID string) ([]domain.Product, error) {
 	query := `
 		SELECT DISTINCT
@@ -515,7 +534,7 @@ func (r *productRepository) GetExchangeCandidates(ctx context.Context, productID
 			ON p.category_id = wo.category_id
 		WHERE
 			source.product_id = $1
-			AND p.status != 'archived'
+			AND p.status = 'active'
 			AND p.product_id <> source.product_id
 			AND p.customer_id <> source.customer_id
 		ORDER BY p.created_at DESC

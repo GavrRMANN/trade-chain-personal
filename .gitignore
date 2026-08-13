@@ -1,0 +1,78 @@
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+back/bin/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Go profiling and local tooling
+*.prof
+
+# Frontend / Node.js / TypeScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+storybook-static/
+.next/
+.nuxt/
+.turbo/
+*.tsbuildinfo
+
+# Local environment and OS files
+.env.*
+!.env.example
+.DS_Store
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Vercel: локальная привязка проекта и токены — не в репозиторий
+.vercel/
+
+# Скомпилированный бинарь бэкенда из локальной сборки
+/back/app
+
+# Локальное состояние оркестратора
+.omc/
+
+# env file
+.env
+
+# Editor/IDE
+# .idea/
+# .vscode/
+.idea/
+.vscode/
+/docs/code_review/CODE_CHECK.md
+/docs/style-example/
+
+# Скрипт для подтягивания файлов в личный репозиторий
+script.ps1
+
+# Playwright E2E: отчёты и артефакты прогона
+/front/playwright-report/
+/front/test-results/
+/front/blob-report/
+/front/e2e/.auth/

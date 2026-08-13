@@ -15,6 +15,12 @@ type CustomerService interface {
 	Delete(context.Context, string) error
 	List(context.Context, int, int) ([]domain.Customer, error)
 	ListOverview(context.Context, int, int) ([]domain.CustomerOverview, error)
+
+	// Работа с вишлистами пользователя
+	GetCustomerWishlistOptions(ctx context.Context, customerID string) ([]domain.CustomerWishlistOption, error)
+	AddCustomerWishlistOption(ctx context.Context, customerID string, categoryID string) error
+	DeleteCustomerWishlistOption(ctx context.Context, customerID string, categoryID string) error
+	ReplaceCustomerWishlistOptions(ctx context.Context, cutomserID string, dto *domain.UpdateCustomerWishlistDTO) error
 }
 
 type ProductService interface {

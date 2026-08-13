@@ -92,7 +92,6 @@ func (s *customerService) List(ctx context.Context, offset, limit int) ([]domain
 	return v, normalizeError(e)
 }
 
-
 // ListOverview отдаёт участников вместе с их показателями на площадке.
 func (s *customerService) ListOverview(ctx context.Context, offset, limit int) ([]domain.CustomerOverview, error) {
 	o, l, e := validatePage(offset, limit)
@@ -109,4 +108,78 @@ func (s *customerService) GetByEmail(ctx context.Context, email string) (*domain
 	}
 	v, err := s.repo.GetByEmail(ctx, email)
 	return v, normalizeError(err)
+}
+
+// Функции для работы с личным вишлистом
+
+func (s *customerService) GetCustomerWishlistOptions(
+	ctx context.Context,
+	customerID string,
+) ([]domain.CustomerWishlistOption, error) {
+	if blank(customerID) {
+		return nil, ErrInvalidInput
+	}
+
+	v, err := s.repo.GetCustomerWishlistOptions(ctx, customerID)
+	return v, normalizeError(err)
+}
+
+func (s *customerService) AddCustomerWishlistOption(
+	ctx context.Context,
+	customerID string,
+	categoryID string,
+) error {
+	if blank(customerID) || blank(categoryID) {
+		return ErrInvalidInput
+	}
+
+	err := s.repo.AddCustomerWishlistOption(
+		ctx,
+		customerID,
+		categoryID,
+	)
+
+	return normalizeError(err)
+}
+
+func (s *customerService) DeleteCustomerWishlistOption(
+	ctx context.Context,
+	customerID string,
+	categoryID string,
+) error {
+	if blank(customerID) || blank(categoryID) {
+		return ErrInvalidInput
+	}
+
+	err := s.repo.DeleteCustomerWishlistOption(
+		ctx,
+		customerID,
+		categoryID,
+	)
+
+	return normalizeError(err)
+}
+
+func (s *customerService) ReplaceCustomerWishlistOptions(
+	ctx context.Context,
+	customerID string,
+	dto *domain.UpdateCustomerWishlistDTO,
+) error {
+	if blank(customerID) || dto == nil {
+		return ErrInvalidInput
+	}
+
+	for _, categoryID := range dto.CategoryIDs {
+		if blank(categoryID) {
+			return ErrInvalidInput
+		}
+	}
+
+	err := s.repo.ReplaceCustomerWishlistOptions(
+		ctx,
+		customerID,
+		dto,
+	)
+
+	return normalizeError(err)
 }

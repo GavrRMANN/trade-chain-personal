@@ -26,7 +26,13 @@ func mountSearchRoutes(r chi.Router, s *search.SearchService) {
 		r.Use(auth.AuthMiddleware)
 
 		r.Get("/chain", h.chain)
+		r.Get("/candidates", h.candidates)
 	})
+}
+
+// CandidatesResponse — ответ подбора следующего шага обмена.
+type CandidatesResponse struct {
+	Products []domain.Product `json:"products"`
 }
 
 // ChainSearchResponse — ответ поиска цепочки.
@@ -100,4 +106,61 @@ func (h searchHandler) chain(w http.ResponseWriter, r *http.Request) {
 		Chain:  chain,
 		Length: length,
 	})
+}
+
+// candidates godoc
+// @Summary Find exchange candidates
+// @Description Подбирает следующий шаг обмена для товара: сперва совпадения по вишлисту, затем остальные активные товары
+// @Tags search
+// @Produce json
+// @Param product_id query string true "Product ID"
+// @Param limit query int false "Max candidates, default 8"
+// @Param direct query bool false "Только вещи с прямым обменом, без добора каталогом"
+// @Success 200 {object} CandidatesResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /search/candidates [get]
+func (h searchHandler) candidates(w http.ResponseWriter, r *http.Request) {
+	productID := strings.TrimSpace(r.URL.Query().Get("product_id"))
+	if productID == "" {
+		writeError(w, service.ErrInvalidInput)
+		return
+	}
+
+	limit := 0
+	if raw := strings.TrimSpace(r.URL.Query().Get("limit")); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed <= 0 {
+			writeError(w, service.ErrInvalidInput)
+			return
+		}
+		limit = parsed
+	}
+
+	directOnly := false
+	if raw := strings.TrimSpace(r.URL.Query().Get("direct")); raw != "" {
+		parsed, err := strconv.ParseBool(raw)
+		if err != nil {
+			writeError(w, service.ErrInvalidInput)
+			return
+		}
+		directOnly = parsed
+	}
+
+	if _, ok := auth.UserIDFromContext(r.Context()); !ok {
+		writeError(w, service.ErrForbidden)
+		return
+	}
+
+	products, err := h.s.FindCandidates(r.Context(), productID, limit, directOnly)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+	if products == nil {
+		products = []domain.Product{}
+	}
+
+	writeJSON(w, http.StatusOK, CandidatesResponse{Products: products})
 }

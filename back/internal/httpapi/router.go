@@ -17,6 +17,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/jackc/pgx/v5/pgxpool"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -32,6 +33,10 @@ type Dependencies struct {
 	Search        *search.SearchService
 	Events        *events.Broker
 	CronSecret    string
+	// DB и DemoResetSecret нужны только служебному сбросу демо-стенда:
+	// без них маршрут /demo/reset просто не поднимается.
+	DB              *pgxpool.Pool
+	DemoResetSecret string
 }
 
 func NewRouter(d Dependencies) http.Handler {
@@ -91,6 +96,7 @@ func NewRouter(d Dependencies) http.Handler {
 			r.Use(middleware.Timeout(15 * time.Second))
 
 			authHandler.mountAuth(r) // /auth/login, /auth/register
+			mountDemoRoutes(r, d.DB, d.DemoResetSecret)
 
 			if d.Customers != nil {
 				mountCustomerRoutes(r, d.Customers)

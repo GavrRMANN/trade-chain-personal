@@ -199,3 +199,125 @@ func (r *customerRepository) ListOverview(ctx context.Context, offset, limit int
 
 	return overviews, rows.Err()
 }
+
+// Методы для работы с вишлистами пользователя
+
+func (r *customerRepository) GetCustomerWishlistOptions(
+	ctx context.Context,
+	customerID string,
+) ([]domain.CustomerWishlistOption, error) {
+	query := `
+		SELECT customer_id, category_id
+		FROM customer_wishlist_options
+		WHERE customer_id = $1
+		ORDER BY category_id
+	`
+
+	rows, err := r.db.Query(ctx, query, customerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	options := make([]domain.CustomerWishlistOption, 0)
+
+	for rows.Next() {
+		var option domain.CustomerWishlistOption
+
+		if err := rows.Scan(
+			&option.CustomerID,
+			&option.CategoryID,
+		); err != nil {
+			return nil, err
+		}
+
+		options = append(options, option)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return options, nil
+}
+
+func (r *customerRepository) AddCustomerWishlistOption(
+	ctx context.Context,
+	customerID string,
+	categoryID string,
+) error {
+	query := `
+		INSERT INTO customer_wishlist_options (
+			customer_id,
+			category_id
+		)
+		VALUES ($1, $2)
+		ON CONFLICT (customer_id, category_id) DO NOTHING
+	`
+
+	_, err := r.db.Exec(ctx, query, customerID, categoryID)
+	return err
+}
+
+func (r *customerRepository) DeleteCustomerWishlistOption(
+	ctx context.Context,
+	customerID string,
+	categoryID string,
+) error {
+	query := `
+		DELETE FROM customer_wishlist_options
+		WHERE customer_id = $1
+		  AND category_id = $2
+	`
+
+	result, err := r.db.Exec(ctx, query, customerID, categoryID)
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
+func (r *customerRepository) ReplaceCustomerWishlistOptions(
+	ctx context.Context,
+	customerID string,
+	dto *domain.UpdateCustomerWishlistDTO,
+) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
+
+	deleteQuery := `
+		DELETE FROM customer_wishlist_options
+		WHERE customer_id = $1
+	`
+
+	if _, err := tx.Exec(ctx, deleteQuery, customerID); err != nil {
+		return err
+	}
+
+	insertQuery := `
+		INSERT INTO customer_wishlist_options (
+			customer_id,
+			category_id
+		)
+		VALUES ($1, $2)
+		ON CONFLICT (customer_id, category_id) DO NOTHING
+	`
+
+	for _, categoryID := range dto.CategoryIDs {
+		if _, err := tx.Exec(ctx, insertQuery, customerID, categoryID); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit(ctx)
+}

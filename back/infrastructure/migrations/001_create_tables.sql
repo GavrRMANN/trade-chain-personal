@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS customer_wishlist_options (
     category_id UUID NOT NULL REFERENCES categories(category_id) ON DELETE CASCADE,
 
     PRIMARY KEY (customer_id, category_id)
-)
+);
 
 -- Таблица связей категорий с вишлистами (многие ко многим)
 CREATE TABLE IF NOT EXISTS wishlist_options (

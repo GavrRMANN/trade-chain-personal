@@ -392,6 +392,11 @@ func (r *chainRepository) CompleteExchange(ctx context.Context, chainID string) 
 	// принять предложение и приехать на встречу впустую.
 	// Всё в той же транзакции: иначе между сменой владельца и закрытием
 	// предложений существует момент, когда чужой оффер ещё можно принять.
+	//
+	// Стороны берутся из заблокированных строк товаров, а не из полей звена:
+	// recipient_id необязателен (у цели-категории его нет вовсе), и разыменование
+	// пустого поля уронило бы завершение обмена вместо того, чтобы закрыть
+	// конкурирующие предложения.
 	_, err = tx.Exec(ctx, `
 		UPDATE chains
 		SET status = CASE
@@ -406,7 +411,7 @@ func (r *chainRepository) CompleteExchange(ctx context.Context, chainID string) 
 		  AND (from_product_id IN ($4, $5) OR to_product_id IN ($4, $5))
 		`, string(domain.ChainCancelled), chainID, string(domain.ChainPending),
 		chain.FromProductID, toProductID, string(domain.ChainActive),
-		chain.InitiatorID, *chain.RecipientID, string(domain.ChainUnavailable))
+		fromOwner, toOwner, string(domain.ChainUnavailable))
 	if err != nil {
 		return err
 	}
